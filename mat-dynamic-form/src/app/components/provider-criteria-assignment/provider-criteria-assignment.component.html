@@ -1,22 +1,33 @@
+<pre>
+{{ blueShieldInfoForm.value | json }}
+</pre>
 <div class="container pt-2 pb-2">
   <h3>Criteria Assignment Details</h3>
 
   <div class="form-container p-2">
     <form [formGroup]="blueShieldInfoForm">
-      <mat-form-field>
-        <mat-label>Blue Shield Number</mat-label>
-        <input type="text" placeholder="Enter Blue Shield Number" matInput formControlName="bsNumber"
-          [matAutocomplete]="bsAutoComplete" />
-        <mat-autocomplete #bsAutoComplete="matAutocomplete" (optionSelected)="bsNumberChange($event)">
-          <mat-option *ngFor="let option of formControlOptions.bsFilteredOptions | async" [value]="option">
-            {{option}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+      <div class="row justify-content-between">
+        <div class="col">
+          <mat-form-field>
+            <mat-label>Blue Shield Number</mat-label>
+            <input type="text" placeholder="Enter Blue Shield Number" matInput formControlName="bsNumber"
+              [matAutocomplete]="bsAutoComplete" />
+            <mat-autocomplete #bsAutoComplete="matAutocomplete" (optionSelected)="bsNumberChange($event)">
+              <mat-option *ngFor="let option of formDependencyData.bsFilteredOptions | async" [value]="option">
+                {{option}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-auto">
+          <a href="javascript:;" (click)="addAdditionalCriteria()">Add Addditional Criteria</a>
+        </div>
+      </div>
 
       <br/>
 
-      <div class="criterias p-2" *ngFor="let criteria of additionalCriterias.controls; let i = index; let isLast = last;">
+      <div class="criterias p-2" *ngFor="let criteria of additionalCriterias.controls; let i = index; let isFirst = first;">
         <div [formGroup]="criteria">
           <div class="row">
             <div class="col-9">
@@ -26,68 +37,102 @@
               </mat-form-field>
             </div>
             <div class="col-3">
-              <div *ngIf="isLast">
+              <div>
                 <a href="javascript:;" (click)="addAdditionalCriteria()">Add Addditional Criteria</a>
               </div>
-              <div>
-                <a href="javascript:;" (click)="removeAdditionalCriteria()">Remove this criteria</a>
+              <div *ngIf="!isFirst">
+                <a href="javascript:;" (click)="removeAdditionalCriteria(i)">Remove this criteria</a>
               </div>
             </div>
           </div>
 
-          <div class="criteria-details-container p-2">
-            <div class="row">
-              <div class="col-9">
-                <div class="row">
-                  <div class="col">
-                    <mat-form-field>
-                      <mat-label>Criteria Start Date</mat-label>
-                      <input type="text" placeholder="Criteria Start Date" matInput />
-                    </mat-form-field>
+          <div class="criteria-details-container p-2 border-bottom" *ngFor="let criteriaDetail of additionalCriteriaDetails(criteria).controls; let j = index; let isFirst = first;">
+            <div [formGroup]="criteriaDetail" class="border-bottom">
+              <div class="row">
+                <div class="col-9">
+                  <div class="row">
+                    <div class="col">
+                      <mat-form-field>
+                        <mat-label>Criteria Start Date</mat-label>
+                        <input type="text" placeholder="Criteria Start Date" matInput formControlName="criteriaStartDate" />
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col">
+                      <mat-form-field>
+                        <mat-label>Criteria End Date</mat-label>
+                        <input type="text" placeholder="Criteria End Date" matInput formControlName="criteriaEndDate" />
+                      </mat-form-field>
+                    </div>            
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div>
+                    <a href="javascript:;" (click)="addAdditionalDates(criteria)">Add Addditional Dates</a>
+                  </div>
+                  <div *ngIf="!isFirst">
+                    <a href="javascript:;" (click)="removeAdditionalDates(criteria, j)">Remove</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="member-details-container p-2 border-bottom" 
+                *ngFor="let memberDetail of additionalMemberDetails(criteriaDetail).controls; let k = index; let isFirst = first;">
+                <div [formGroup]="memberDetail">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="row">
+                        <div class="col">
+                          <mat-form-field>
+                            <mat-label>Member Type</mat-label>
+                            <input type="text" placeholder="member Type" matInput formControlName="memberType" />
+                          </mat-form-field>
+                        </div>
+      
+                        <div class="col">
+                          <mat-radio-group class="row" formControlName="assignmentAction">
+                            <ng-container *ngFor="let providerAssignmentAction of formDependencyData.providerAssignmentActions">
+                              <mat-radio-button class="col-auto" [value]="providerAssignmentAction.value">
+                                {{providerAssignmentAction.label}}
+                              </mat-radio-button>
+                            </ng-container>
+                          </mat-radio-group>
+                        </div>            
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <div>
+                        <a href="javascript:;" (click)="addAdditionalMemberType(criteriaDetail)">Add Member Type</a>
+                      </div>
+                      <div *ngIf="!isFirst">
+                        <a href="javascript:;" (click)="removeMemberType(criteriaDetail, k)">Remove</a>
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="col">
-                    <mat-form-field>
-                      <mat-label>Criteria End Date</mat-label>
-                      <input type="text" placeholder="Criteria End Date" matInput />
-                    </mat-form-field>
-                  </div>            
-                </div>
-              </div>
-              <div class="col-3">
-                <div>
-                  <a href="javascript:;" (click)="addAdditionalDates()">Add Addditional Dates</a>
-                </div>
-                <div>
-                  <a href="javascript:;" (click)="removeAdditionalDates()">Remove</a>
-                </div>
-              </div>
-            </div>
+                  <ng-container *ngIf="getFormGroupValue(memberDetail, 'assignmentAction') === 'Pay'">
+                    <div class="row">
+                      <div class="col">
+                        <mat-form-field>
+                          <mat-label>Rate</mat-label>
+                          <input type="text" placeholder="rate" matInput formControlName="rate" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col">
+                        <mat-form-field>
+                          <mat-label>Overlap</mat-label>
+                          <input type="text" placeholder="Overlap" matInput formControlName="overlap" />
+                        </mat-form-field>
+                      </div>
+                      <div class="col">
+                        <mat-form-field>
+                          <mat-label>Payment Exceptions</mat-label>
+                          <input type="text" placeholder="Payment Exceptions" matInput formControlName="paymentExceptions" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </ng-container>
 
-            <div class="row">
-              <div class="col-9">
-                <div class="row">
-                  <div class="col">
-                    <mat-form-field>
-                      <mat-label>Member Type</mat-label>
-                      <input type="text" placeholder="Criteria Start Date" matInput />
-                    </mat-form-field>
-                  </div>
-
-                  <div class="col">
-                    <mat-radio-group aria-label="Select an option">
-                      <mat-radio-button value="1">Option 1</mat-radio-button>
-                      <mat-radio-button value="2">Option 2</mat-radio-button>
-                    </mat-radio-group>
-                  </div>            
-                </div>
-              </div>
-              <div class="col-3">
-                <div>
-                  <a href="javascript:;" (click)="addMemberType()">Add Member Type</a>
-                </div>
-                <div>
-                  <a href="javascript:;" (click)="removeMemberType()">Remove</a>
                 </div>
               </div>
             </div>
