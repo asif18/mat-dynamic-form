@@ -122,33 +122,60 @@
                         </mat-form-field>
                       </div>
                       <div class="col">
-                        <mat-form-field>
-                          <mat-label>Payment Exceptions</mat-label>
-                          <input type="text" placeholder="Payment Exceptions" matInput formControlName="paymentExceptions" />
-                        </mat-form-field>
+                        <mat-label>Payment Exceptions</mat-label>
+                        <div class="row" [formGroup]="paymentExceptionDetails(memberDetail)">
+                          <ng-container *ngFor="let pe of formDependencyData.paymentExceptions">
+                            <mat-checkbox class="col-auto" [formControlName]="pe.name" [value]="pe.value">{{pe.label}}</mat-checkbox>
+                          </ng-container>
+                        </div>
                       </div>
                     </div>
 
-                    <div class="row">
-                      <div class="col">
-                        <mat-form-field>
-                          <mat-label>field1</mat-label>
-                          <input type="text" placeholder="field1" matInput formControlName="field1" />
-                        </mat-form-field>
+                    <ng-container *ngIf="getFormGroupValue(paymentExceptionDetails(memberDetail), 'inlier')">
+                      <div class="row">
+                        <div class="col">
+                          <mat-form-field>
+                            <mat-label>inlier field1</mat-label>
+                            <input type="text" placeholder="field1" matInput />
+                          </mat-form-field>
+                        </div>
+                        <div class="col">
+                          <mat-form-field>
+                            <mat-label>inlier field2</mat-label>
+                            <input type="text" placeholder="field2" matInput />
+                          </mat-form-field>
+                        </div>
+                        <div class="col">
+                          <mat-form-field>
+                            <mat-label>inlier field3</mat-label>
+                            <input type="text" placeholder="field3" matInput />
+                          </mat-form-field>
+                        </div>
                       </div>
-                      <div class="col">
-                        <mat-form-field>
-                          <mat-label>field2</mat-label>
-                          <input type="text" placeholder="field2" matInput formControlName="field2" />
-                        </mat-form-field>
+                    </ng-container>
+
+                    <ng-container *ngIf="getFormGroupValue(paymentExceptionDetails(memberDetail), 'outlier')">
+                      <div class="row">
+                        <div class="col">
+                          <mat-form-field>
+                            <mat-label>outlier field1</mat-label>
+                            <input type="text" placeholder="field1" matInput />
+                          </mat-form-field>
+                        </div>
+                        <div class="col">
+                          <mat-form-field>
+                            <mat-label>outlier field2</mat-label>
+                            <input type="text" placeholder="field2" matInput />
+                          </mat-form-field>
+                        </div>
+                        <div class="col">
+                          <mat-form-field>
+                            <mat-label>outlier field3</mat-label>
+                            <input type="text" placeholder="field3" matInput />
+                          </mat-form-field>
+                        </div>
                       </div>
-                      <div class="col">
-                        <mat-form-field>
-                          <mat-label>field3</mat-label>
-                          <input type="text" placeholder="field3" matInput formControlName="field3" />
-                        </mat-form-field>
-                      </div>
-                    </div>
+                    </ng-container>
                   </ng-container>
 
                 </div>

@@ -3,12 +3,15 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators'
 import { FormGroup, FormBuilder, Validators, FormControl, FormArray, FormArrayName } from '@angular/forms';
 import { DataService } from '../../services';
+import { constants } from 'fs';
 
 interface FormDependencyData {
   bsOptions?: Array<string>;
   bsFilteredOptions?: Observable<string[]>;
   providerAssignmentActions?: Array<any>;
+  paymentExceptions?: Array<any>;
 }
+
 @Component({
   selector: 'app-provider-criteria-assignment',
   templateUrl: './provider-criteria-assignment.component.html',
@@ -25,6 +28,10 @@ export class ProviderCriteriaAssignmentComponent implements OnInit {
       { label: 'BAU', value: 'BAU', checked: false, disabled: false },
       { label: 'Reject', value: 'Reject', checked: false, disabled: false },
       { label: 'Pay', value: 'Pay', checked: false, disabled: false }
+    ],
+    paymentExceptions: [
+      { label: 'Inlier', value: false, name: 'inlier' },
+      { label: 'Outlier', value: false, name: 'outlier' },
     ]
   };
 
@@ -107,12 +114,16 @@ export class ProviderCriteriaAssignmentComponent implements OnInit {
   }
 
   public generateMemberDetails(): FormGroup {
+    const paymentExceptionDetailControls = {};
+    this.formDependencyData.paymentExceptions.forEach((pe) => {
+      paymentExceptionDetailControls[pe.name] = [pe.value];
+    });
     return this.formBuilder.group({
       memberType: ['', Validators.required],
       assignmentAction: ['', Validators.required],
       rate: ['', Validators.required],
       overlap: ['', Validators.required],
-      paymentExceptions: ['', Validators.required],
+      paymentExceptionDetails: this.formBuilder.group(paymentExceptionDetailControls),
       field1: ['', Validators.required],
       field2: ['', Validators.required],
       field3: ['', Validators.required],
@@ -129,6 +140,10 @@ export class ProviderCriteriaAssignmentComponent implements OnInit {
 
   public removeMemberType(criteriaDetail: FormGroup, k: number) {
     this.additionalMemberDetails(criteriaDetail).removeAt(k);
+  }
+
+  public paymentExceptionDetails(memberDetail: FormGroup): FormGroup {
+    return memberDetail.get('paymentExceptionDetails') as FormGroup;
   }
 
   public getFormGroupValue(formGroup: FormGroup, formControlName: string) {
